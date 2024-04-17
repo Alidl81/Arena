@@ -206,7 +206,7 @@ class AccountingApp(QMainWindow):
         self.search_entry = QLineEdit()
         self.search_entry.setPlaceholderText("نام محصول")
         self.search_entry.setAlignment(Qt.AlignCenter)
-        self.search_entry.textChanged.connect(lambda:self.SearchProduct(self.search_entry))
+        self.search_entry.textChanged.connect(lambda:self.SearchProduct(self.search_entry,inventory_table))
 
         button_layout = QHBoxLayout()
 
@@ -236,7 +236,7 @@ class AccountingApp(QMainWindow):
         self.search_entry_store = QLineEdit()
         self.search_entry_store.setPlaceholderText("نام محصول")
         self.search_entry_store.setAlignment(Qt.AlignCenter)
-        self.search_entry_store.textChanged.connect(lambda:self.SearchProduct(self.search_entry))
+        self.search_entry_store.textChanged.connect(lambda:self.SearchProduct(self.search_entry_store,store_table))
 
         button_layout = QHBoxLayout()
 
@@ -256,9 +256,22 @@ class AccountingApp(QMainWindow):
 
         header = deposit_table.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)
+        
+        self.search_entry_deposit = QLineEdit()
+        self.search_entry_deposit.setPlaceholderText("جستجو")
+        self.search_entry_deposit.setAlignment(Qt.AlignCenter)
+        self.search_entry_deposit.textChanged.connect(lambda:self.SearchProduct(self.search_entry_deposit,deposit_table))
+        
+        button_layout = QHBoxLayout()
+
+
+        
 
         deposit_layout.addWidget(deposit_table)
         deposit_page.setLayout(deposit_layout)
+        button_layout.addWidget(self.search_entry_deposit)
+
+        deposit_layout.addLayout(button_layout)
         
         
         
@@ -272,9 +285,23 @@ class AccountingApp(QMainWindow):
 
         header = withdraw_table.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)
+        
+        
 
+        self.search_entry_withdraw = QLineEdit()
+        self.search_entry_withdraw.setPlaceholderText("جستجو")
+        self.search_entry_withdraw.setAlignment(Qt.AlignCenter)
+        self.search_entry_withdraw.textChanged.connect(lambda:self.SearchProduct(self.search_entry_withdraw,withdraw_table))
+        
+        button_layout = QHBoxLayout()
+
+
+        
         withdraw_layout.addWidget(withdraw_table)
         withdraw_page.setLayout(withdraw_layout)
+        button_layout.addWidget(self.search_entry_withdraw)
+
+        withdraw_layout.addLayout(button_layout)
 
 
         ledger_page = QWidget()
@@ -287,6 +314,23 @@ class AccountingApp(QMainWindow):
 
         header = ledger_table.horizontalHeader()
         header.setSectionResizeMode(QHeaderView.Stretch)
+        
+        self.search_entry_ledger = QLineEdit()
+        self.search_entry_ledger.setPlaceholderText("جستجو")
+        self.search_entry_ledger.setAlignment(Qt.AlignCenter)
+        self.search_entry_ledger.textChanged.connect(lambda:self.SearchProduct(self.search_entry_ledger,ledger_table))
+        
+        button_layout = QHBoxLayout()
+
+
+        button_layout.addWidget(self.search_entry_withdraw)
+
+
+        # ledger_layout.addWidget(ledger_table)
+        ledger_layout.addLayout(button_layout)
+
+        ledger_page.setLayout(ledger_layout)
+
 
         ledger_layout.addWidget(ledger_table)
         ledger_page.setLayout(ledger_layout)
@@ -1059,26 +1103,22 @@ class AccountingApp(QMainWindow):
                 self.ledger_lock=0
                 
                                            
-    def SearchProduct(self, entry:QLineEdit):
-        text = entry.text().strip() 
-        items = inventory_table.findItems(text, Qt.MatchContains)  
-        if text!="":
-            if items:
-                for item in items:
-                    item_text = item.text()
-                    if text.lower() == item_text.lower():
-                        item.setBackground(Qt.yellow)  
-                    else:
-                        if item is not None:
-                            item.setBackground(Qt.white)
-            else:
-                for i in range(inventory_table.rowCount()):
-                    for j in range(inventory_table.colorCount()) : 
-                        Item=inventory_table.item(i,j)  
-                        if Item is not None:           
-                            Item.setBackground(Qt.white)
-                        
-                              
+    def SearchProduct(self, entry: QLineEdit, table: QTableWidget):
+        text = entry.text().strip()
+        items = table.findItems(text, Qt.MatchStartsWith)
+        if text:
+            for item in items:
+                if text.lower() == item.text().lower():
+                    item.setBackground(Qt.yellow)
+                else:
+                    item.setBackground(Qt.white)
+        else:
+            for i in range(table.rowCount()):
+                for _ in range(table.columnCount()):
+                    item = table.item(i, _)
+                    if item is not None:
+                        item.setBackground(Qt.white)               
+                                
 
 
     def Save(self,*tables:QTableWidget):
