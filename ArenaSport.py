@@ -233,14 +233,13 @@ class AccountingApp(QMainWindow):
         
         store_layout.addWidget(store_table)
 
-        add_button = QPushButton("افزودن محصول")
-        remove_button = QPushButton("حذف محصول")
         self.search_entry_store = QLineEdit()
-        self.search_entry_store.setPlaceholderText("جستجوی محصول")
+        self.search_entry_store.setPlaceholderText("نام محصول")
+        self.search_entry_store.setAlignment(Qt.AlignCenter)
+        self.search_entry_store.textChanged.connect(lambda:self.SearchProduct(self.search_entry))
 
         button_layout = QHBoxLayout()
-        button_layout.addWidget(add_button)
-        button_layout.addWidget(remove_button)
+
         button_layout.addWidget(self.search_entry_store)
 
         store_layout.addLayout(button_layout)
