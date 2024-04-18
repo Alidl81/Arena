@@ -323,17 +323,17 @@ class AccountingApp(QMainWindow):
         button_layout = QHBoxLayout()
 
 
-        button_layout.addWidget(self.search_entry_withdraw)
-
-
-        # ledger_layout.addWidget(ledger_table)
-        ledger_layout.addLayout(button_layout)
 
         ledger_page.setLayout(ledger_layout)
 
 
         ledger_layout.addWidget(ledger_table)
         ledger_page.setLayout(ledger_layout)
+        button_layout.addWidget(self.search_entry_ledger)
+
+
+        # ledger_layout.addWidget(ledger_table)
+        ledger_layout.addLayout(button_layout)
 
         self.stacked_widget.addWidget(inventory_page)
         self.stacked_widget.addWidget(store_page)
