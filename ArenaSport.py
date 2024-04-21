@@ -21,6 +21,7 @@ class AccountingApp(QMainWindow):
         self.setWindowTitle("نرم افزار حسابداری آرنا اسپرت")
         self.setWindowIcon(QIcon("Arena.ico"))
         self.setGeometry(550, 200, 800, 600)
+        # self.setStyleSheet("background : #a6f9ff ;")
         self.setMinimumWidth(800)
         self.setMinimumHeight(600)
 
@@ -45,7 +46,7 @@ class AccountingApp(QMainWindow):
         self.create_toolbar()
         self.load_settings()
         self.create_pages()
-        self.load_Data
+        self.load_Data()
 
     def create_toolbar(self):
         global toolbar_label,toolbar,lock_action,plus_action
@@ -207,154 +208,183 @@ class AccountingApp(QMainWindow):
     def load_Data(self):
         connection = sqlite3.connect("DataBase.db")
         cursor = connection.cursor()
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='Inventory'")
+        if cursor.fetchone() is not None:
+            
+            cursor.execute("SELECT * FROM Inventory")
+            inventory = cursor.fetchall()
+        
+            cursor.execute("SELECT * FROM Store")
+            store = cursor.fetchall()
 
-        cursor.execute("SELECT * FROM Inventory")
-        inventory = cursor.fetchall()
+            cursor.execute("SELECT * FROM Deposit")
+            deposit = cursor.fetchall()
 
-        cursor.execute("SELECT * FROM Store")
-        store = cursor.fetchall()
+            cursor.execute("SELECT * FROM Withdraw")
+            withdraw = cursor.fetchall()
 
-        cursor.execute("SELECT * FROM Deposit")
-        deposit = cursor.fetchall()
+            cursor.execute("SELECT * FROM Ledger")
+            ledger = cursor.fetchall()
 
-        cursor.execute("SELECT * FROM Withdraw")
-        withdraw = cursor.fetchall()
-
-        cursor.execute("SELECT * FROM Ledger")
-        ledger = cursor.fetchall()
-
-        if inventory:
-            table=inventory_table
-            for item in inventory:
-                pname, pnum, pprice = item
+            if inventory:
+                table=inventory_table
+                for item in inventory:
+                    pname, pnum, pprice = item
                 
-                row_count = store_table.rowCount()
-                inventory_table.insertRow(inventory_table.rowCount())
-                line_Edit_Num = QLineEdit(pnum,self)
-                line_Edit_Price = QLineEdit(pprice,self)
+                    row_count = inventory_table.rowCount()
+                    inventory_table.insertRow(inventory_table.rowCount())
+                    line_Edit_Num = QLineEdit(pnum,self)
+                    line_Edit_Price = QLineEdit(pprice,self)
 
-                line_Edit_Num.setStyleSheet("border: none; font-size: 18px; font-family: 'Dubai';")
-                line_Edit_Price.setStyleSheet("border: none; font-size: 18px; font-family: 'Dubai';")
+                    line_Edit_Num.setStyleSheet("border: none; font-size: 18px; font-family: 'Dubai';")
+                    line_Edit_Price.setStyleSheet("border: none; font-size: 18px; font-family: 'Dubai';")
 
-                line_Edit_Num.setValidator(QIntValidator())
-                line_Edit_Price.setValidator(QIntValidator())
+                    line_Edit_Num.setValidator(QIntValidator())
+                    line_Edit_Price.setValidator(QIntValidator())
 
-                self.line_Edits["inventory"]["Num"][f"line{table.rowCount()}"] = line_Edit_Num
-                self.line_Edits["inventory"]["Price"][f"line{table.rowCount()}"] = line_Edit_Price
+                    self.line_Edits["inventory"]["Num"][f"line{table.rowCount()}"] = line_Edit_Num
+                    self.line_Edits["inventory"]["Price"][f"line{table.rowCount()}"] = line_Edit_Price
 
-                table.item(row_count-1,0).setText(pname)
-                table.setCellWidget(table.rowCount() - 1, 1, line_Edit_Num)
-                table.setCellWidget(table.rowCount() - 1, 2, line_Edit_Price)
+                    table.setItem(row_count,0,QTableWidgetItem(pname))
+                    table.setCellWidget(table.rowCount() - 1, 1, line_Edit_Num)
+                    table.setCellWidget(table.rowCount() - 1, 2, line_Edit_Price)
 
-        if store:
-            table=store_table
-            for item in store:
-                pname, pnum, pprice = item
-                row_count = store_table.rowCount()
-                store_table.insertRow(row_count)
+            if store:
+                table=store_table
+                for item in store:
+                    pname, pnum, pprice = item
+                    row_count = store_table.rowCount()
+                    store_table.insertRow(row_count)
 
-                line_Edit_Num = QLineEdit(pnum,self)
-                line_Edit_Price = QLineEdit(pprice,self)
+                    line_Edit_Num = QLineEdit(pnum,self)
+                    line_Edit_Price = QLineEdit(pprice,self)
 
-                line_Edit_Num.setStyleSheet("border: none; font-size: 18px; font-family: 'Dubai';")
-                line_Edit_Price.setStyleSheet("border: none; font-size: 18px; font-family: 'Dubai';")
+                    line_Edit_Num.setStyleSheet("border: none; font-size: 18px; font-family: 'Dubai';")
+                    line_Edit_Price.setStyleSheet("border: none; font-size: 18px; font-family: 'Dubai';")
 
-                line_Edit_Num.setValidator(QIntValidator())
-                line_Edit_Price.setValidator(QIntValidator())
+                    line_Edit_Num.setValidator(QIntValidator())
+                    line_Edit_Price.setValidator(QIntValidator())
 
-                self.line_Edits["store"]["Num"][f"line{table.rowCount()}"] = line_Edit_Num
-                self.line_Edits["store"]["Price"][f"line{table.rowCount()}"] = line_Edit_Price
+                    self.line_Edits["store"]["Num"][f"line{table.rowCount()}"] = line_Edit_Num
+                    self.line_Edits["store"]["Price"][f"line{table.rowCount()}"] = line_Edit_Price
 
-                table.item(row_count-1,0).setText(pname)
-                table.setCellWidget(table.rowCount() - 1, 1, line_Edit_Num)
-                table.setCellWidget(table.rowCount() - 1, 2, line_Edit_Price)
+                    table.setItem(row_count,0,QTableWidgetItem(pname))
+                    table.setCellWidget(table.rowCount() - 1, 1, line_Edit_Num)
+                    table.setCellWidget(table.rowCount() - 1, 2, line_Edit_Price)
 
-        if deposit:
-            table=deposit_table
-            for item in deposit:
-                dprice, ddate, dtime, ddes = item
-                row_count = deposit_table.rowCount()
-                deposit_table.insertRow(row_count)
+            if deposit:
+                table=deposit_table
+                for item in deposit:
+                    dprice, ddate, dtime, ddes = item
+                    row_count = deposit_table.rowCount()
+                    deposit_table.insertRow(row_count)
 
-                line_Edit_Price = QLineEdit(dprice,self)
+                    line_Edit_Price = QLineEdit(dprice,self)
 
-                date_Edit = QDateEdit()
-                date_Edit.setDate(QDate(ddate))
+                    date_Edit = QDateEdit()
+                    month,day,year=ddate.split("/")
+                    
+                    date_Edit.setDate(QDate(int(year),int(month),int(day)))
+                    
+                    time_Edit = QTimeEdit()
+                    time_components = dtime.split(':')
+                    hour=int(time_components[0])
+                    minute=int(time_components[1].split()[0])
+                    A_P=time_components[1].split()[1]
+                    if A_P == 'PM':
+                        hour += 12
+                    
+                    time_Edit.setTime(QTime(hour,minute))
+                    
+                    line_Edit_Price.setStyleSheet("border: none; font-size: 18px; font-family: 'Dubai';")
 
-                time_Edit = QTimeEdit()
-                time_Edit.setTime(QTime(dtime))
+                    line_Edit_Price.setValidator(QIntValidator())
 
-                line_Edit_Price.setStyleSheet("border: none; font-size: 18px; font-family: 'Dubai';")
+                    self.line_Edits["deposit"]["Price"][f"line{table.rowCount()}"] = line_Edit_Price
+                    self.line_Edits["deposit"]["Date"][f"line{table.rowCount()}"] = date_Edit
+                    self.line_Edits["deposit"]["Time"][f"line{table.rowCount()}"] = time_Edit
 
-                line_Edit_Price.setValidator(QIntValidator())
+                    table.setCellWidget(table.rowCount() - 1, 0, line_Edit_Price)
+                    table.setCellWidget(table.rowCount() - 1, 1, date_Edit)
+                    table.setCellWidget(table.rowCount() - 1, 2, time_Edit)
+                    table.setItem(row_count,3,QTableWidgetItem(ddes))
+                    
+            if withdraw:
+                table=withdraw_table
+                for item in withdraw:
+                    wprice, wdate, wtime, wdes = item
+                    row_count = withdraw_table.rowCount()
+                    withdraw_table.insertRow(row_count)
 
-                self.line_Edits["deposit"]["Price"][f"line{table.rowCount()}"] = line_Edit_Price
-                self.line_Edits["deposit"]["Date"][f"line{table.rowCount()}"] = date_Edit
-                self.line_Edits["deposit"]["Time"][f"line{table.rowCount()}"] = time_Edit
+                    line_Edit_Price = QLineEdit(wprice,self)
 
-                table.setCellWidget(table.rowCount() - 1, 0, line_Edit_Price)
-                table.setCellWidget(table.rowCount() - 1, 1, date_Edit)
-                table.setCellWidget(table.rowCount() - 1, 2, time_Edit)
-                table.item(row_count-1,3).setText(ddes)
-                
-        if withdraw:
-            table=withdraw_table
-            for item in withdraw:
-                wprice, wdate, wtime, wdes = item
-                row_count = withdraw_table.rowCount()
-                withdraw_table.insertRow(row_count)
+                    date_Edit = QDateEdit()
+                    month,day,year=wdate.split("/")
+                    
+                    date_Edit.setDate(QDate(int(year),int(month),int(day)))
 
-                line_Edit_Price = QLineEdit(wprice,self)
+                    time_Edit = QTimeEdit()
+                    time_components = wtime.split(':')
+                    hour=int(time_components[0])
+                    minute=int(time_components[1].split()[0])
+                    A_P=time_components[1].split()[1]
+                    if A_P == 'PM':
+                        hour += 12
+                    
+                    time_Edit.setTime(QTime(hour,minute))
+                    line_Edit_Price.setStyleSheet("border: none; font-size: 18px; font-family: 'Dubai';")
 
-                date_Edit = QDateEdit()
-                date_Edit.setDate(QDate(wdate))
+                    line_Edit_Price.setValidator(QIntValidator())
 
-                time_Edit = QTimeEdit()
-                time_Edit.setTime(QTime(wtime))
+                    self.line_Edits["withdraw"]["Price"][f"line{table.rowCount()}"] = line_Edit_Price
+                    self.line_Edits["withdraw"]["Date"][f"line{table.rowCount()}"] = date_Edit
+                    self.line_Edits["withdraw"]["Time"][f"line{table.rowCount()}"] = time_Edit
+                    
 
-                line_Edit_Price.setStyleSheet("border: none; font-size: 18px; font-family: 'Dubai';")
+                    table.setCellWidget(table.rowCount() - 1, 0, line_Edit_Price)
+                    table.setCellWidget(table.rowCount() - 1, 1, date_Edit)
+                    table.setCellWidget(table.rowCount() - 1, 2, time_Edit)
+                    table.setItem(row_count,3,QTableWidgetItem(wdes))
+                    
+            if ledger:
+                table=ledger_table
+                for item in ledger:
+                    lname, ldate, ltime, lprice, lpname = item
+                    row_count = ledger_table.rowCount()
+                    
+                    ledger_table.insertRow(row_count)
 
-                line_Edit_Price.setValidator(QIntValidator())
+                    line_Edit_Price = QLineEdit(lprice,self)
 
-                self.line_Edits["withdraw"]["Price"][f"line{table.rowCount()}"] = line_Edit_Price
-                self.line_Edits["withdraw"]["Date"][f"line{table.rowCount()}"] = date_Edit
-                self.line_Edits["withdraw"]["Time"][f"line{table.rowCount()}"] = time_Edit
-                
+                    date_Edit = QDateEdit()
+                    month,day,year=ldate.split("/")
+                    
+                    date_Edit.setDate(QDate(int(year),int(month),int(day)))
+                    
 
-                table.setCellWidget(table.rowCount() - 1, 0, line_Edit_Price)
-                table.setCellWidget(table.rowCount() - 1, 1, date_Edit)
-                table.setCellWidget(table.rowCount() - 1, 2, time_Edit)
-                table.item(row_count-1,3).setText(wdes)
-                
-        if ledger:
-            table=ledger_table
-            for item in ledger:
-                lname, ldate, ltime, lprice, lpname = item
-                row_count = ledger_table.rowCount()
-                
-                ledger_table.insertRow(row_count)
+                    time_Edit = QTimeEdit()
+                    time_components = ltime.split(':')
+                    hour=int(time_components[0])
+                    minute=int(time_components[1].split()[0])
+                    A_P=time_components[1].split()[1]
+                    if A_P == 'PM':
+                        hour += 12
+                    
+                    time_Edit.setTime(QTime(hour,minute))
 
-                line_Edit_Price = QLineEdit(lprice,self)
+                    line_Edit_Price.setStyleSheet("border: none; font-size: 18px; font-family: 'Dubai';")
 
-                date_Edit = QDateEdit()
-                date_Edit.setDate(QDate(ldate))
+                    line_Edit_Price.setValidator(QIntValidator())
 
-                time_Edit = QTimeEdit()
-                time_Edit.setTime(QTime(ltime))
-
-                line_Edit_Price.setStyleSheet("border: none; font-size: 18px; font-family: 'Dubai';")
-
-                line_Edit_Price.setValidator(QIntValidator())
-
-                self.line_Edits["ledger"]["Date"][f"line{table.rowCount()}"] = date_Edit
-                self.line_Edits["ledger"]["Time"][f"line{table.rowCount()}"] = time_Edit
-                self.line_Edits["ledger"]["Price"][f"line{table.rowCount()}"] = line_Edit_Price
-                table.item(row_count-1,0).setText(lname)
-                table.setCellWidget(table.rowCount() - 1, 1, date_Edit)
-                table.setCellWidget(table.rowCount() - 1, 2, time_Edit)
-                table.setCellWidget(table.rowCount() - 1, 3, line_Edit_Price)
-                table.item(row_count-1,4).setText(lpname)
-                
+                    self.line_Edits["ledger"]["Date"][f"line{table.rowCount()}"] = date_Edit
+                    self.line_Edits["ledger"]["Time"][f"line{table.rowCount()}"] = time_Edit
+                    self.line_Edits["ledger"]["Price"][f"line{table.rowCount()}"] = line_Edit_Price
+                    table.setItem(row_count,0,QTableWidgetItem(lname))
+                    table.setCellWidget(table.rowCount() - 1, 1, date_Edit)
+                    table.setCellWidget(table.rowCount() - 1, 2, time_Edit)
+                    table.setCellWidget(table.rowCount() - 1, 3, line_Edit_Price)
+                    table.setItem(row_count,4,QTableWidgetItem(lpname))
+                    
 
         connection.close()
             
@@ -387,12 +417,13 @@ class AccountingApp(QMainWindow):
             sys.exit()
 
     def create_pages(self):
-        global inventory_table,search_entry,store_table,ledger_table,withdraw_table,deposit_table
+        global inventory_table,store_table,ledger_table,withdraw_table,deposit_table
         self.stacked_widget = QStackedWidget()
 
         
         
         inventory_page = QWidget()
+        # inventory_page.setStyleSheet("background-color : #a6f9ff ;")
         inventory_layout = QVBoxLayout()
 
         
@@ -566,15 +597,14 @@ class AccountingApp(QMainWindow):
             deposit_table.setHorizontalHeaderLabels(["Price", "Date","Time", "Description"])
             withdraw_table.setHorizontalHeaderLabels(["Price", "Date","Time", "Description"])
             ledger_table.setHorizontalHeaderLabels(["Name & Family", "Date","Time", "Price","Product Name"])        
-            search_entry.setPlaceholderText("Product Name")
+            
         else:
             inventory_table.setHorizontalHeaderLabels(["نام محصول", "تعداد", "قیمت"])
             store_table.setHorizontalHeaderLabels(["نام محصول", "تعداد", "قیمت"])
             deposit_table.setHorizontalHeaderLabels(["مبلغ", "تاریخ", "ساعت", "توضیحات"])
             withdraw_table.setHorizontalHeaderLabels(["مبلغ", "تاریخ", "ساعت", "توضیحات"])
             ledger_table.setHorizontalHeaderLabels(["نام و نام خانوادگی", "تاریخ", "ساعت", "مبلغ", "نام محصول"])
-            search_entry.setPlaceholderText("نام محصول")
-
+        
     def separator(self, obj:QLineEdit):
         text = obj.text().replace(",", "")  # حذف همه کاماها
         text_length = len(text)
@@ -921,7 +951,7 @@ class AccountingApp(QMainWindow):
                             
                             for l_e in self.line_Edits["inventory"]["Price"]:
                                 if self.line_Edits["inventory"]["Price"][l_e] is not None:
-                                    print(self.line_Edits["inventory"]["Price"][l_e])
+                                    
                                 
                                     self.line_Edits["inventory"]["Price"][l_e].setEnabled(False)
                                             
@@ -1368,6 +1398,7 @@ class AccountingApp(QMainWindow):
                 
                 if t.objectName()=="inventory_table":
                     cursor.execute("CREATE TABLE IF NOT EXISTS Inventory (PName TEXT, Num TEXT, Price TEXT)")
+                    cursor.execute("DELETE FROM Inventory")
                     for i in range(t.rowCount()):        
                         P_Name=t.item(i,0).text()
                         P_Num=t.cellWidget(i,1).text()    
@@ -1376,8 +1407,9 @@ class AccountingApp(QMainWindow):
                         connection.commit()
                         
                         
-                elif t.objectName()=="store_table":
+                if t.objectName()=="store_table":
                     cursor.execute("CREATE TABLE IF NOT EXISTS Store (PName TEXT, Num TEXT, Price TEXT)")
+                    cursor.execute("DELETE FROM Store")
                     for i in range(t.rowCount()):        
                         P_Name=t.item(i,0).text()
                         P_Num=t.cellWidget(i,1).text()    
@@ -1386,9 +1418,10 @@ class AccountingApp(QMainWindow):
                         connection.commit()
                         
                         
-                elif t.objectName()=="withdraw_table":
+                if t.objectName()=="withdraw_table":
                     
                     cursor.execute("CREATE TABLE IF NOT EXISTS Withdraw (Price TEXT, Date TEXT, Time TEXT , Des TEXT)")
+                    cursor.execute("DELETE FROM Withdraw")
                     
                     for i in range(t.rowCount()):        
                         W_Price=t.cellWidget(i,0).text()
@@ -1399,8 +1432,9 @@ class AccountingApp(QMainWindow):
                         connection.commit()
                         
                     
-                elif t.objectName()=="deposit_table":
+                if t.objectName()=="deposit_table":
                     cursor.execute("CREATE TABLE IF NOT EXISTS Deposit (Price TEXT, Date TEXT, Time TEXT , Des TEXT)")
+                    cursor.execute("DELETE FROM Deposit")
                     
                     for i in range(t.rowCount()):        
                         D_Price=t.cellWidget(i,0).text()
@@ -1411,10 +1445,12 @@ class AccountingApp(QMainWindow):
                         connection.commit()
                         
                 
-                elif t.objectName()=="ledger_table":
+                if t.objectName()=="ledger_table":
                     cursor.execute("CREATE TABLE IF NOT EXISTS Ledger (Name TEXT , Date TEXT, Time TEXT, Price TEXT , PName TEXT)")
+                    cursor.execute("DELETE FROM Ledger")
+                    
                     for i in range(t.rowCount()):        
-                        L_Name=t.cellWidget(i,0).text()
+                        L_Name=t.item(i,0).text()
                         L_Date=t.cellWidget(i,1).text()
                         L_Time=t.cellWidget(i,2).text()
                         L_Price=t.cellWidget(i,3).text()
@@ -1427,6 +1463,7 @@ class AccountingApp(QMainWindow):
                 
                 if t.objectName()=="inventory_table":
                     cursor.execute("CREATE TABLE IF NOT EXISTS Inventory (PName TEXT, Num TEXT, Price TEXT)")
+                    cursor.execute("DELETE FROM Inventory")
                     for i in range(t.rowCount()):        
                         P_Name=t.item(i,0).text()
                         P_Num=t.cellWidget(i,1).text()    
@@ -1435,8 +1472,9 @@ class AccountingApp(QMainWindow):
                         connection.commit()
                         
                         
-                elif t.objectName()=="store_table":
+                if t.objectName()=="store_table":
                     cursor.execute("CREATE TABLE IF NOT EXISTS Store (PName TEXT, Num TEXT, Price TEXT)")
+                    cursor.execute("DELETE FROM Store")
                     for i in range(t.rowCount()):        
                         P_Name=t.item(i,0).text()
                         P_Num=t.cellWidget(i,1).text()    
@@ -1445,9 +1483,10 @@ class AccountingApp(QMainWindow):
                         connection.commit()
                         
                         
-                elif t.objectName()=="withdraw_table":
+                if t.objectName()=="withdraw_table":
                     
                     cursor.execute("CREATE TABLE IF NOT EXISTS Withdraw (Price TEXT, Date TEXT, Time TEXT , Des TEXT)")
+                    cursor.execute("DELETE FROM Withdraw")
                     
                     for i in range(t.rowCount()):        
                         W_Price=t.cellWidget(i,0).text()
@@ -1458,8 +1497,9 @@ class AccountingApp(QMainWindow):
                         connection.commit()
                         
                     
-                elif t.objectName()=="deposit_table":
+                if t.objectName()=="deposit_table":
                     cursor.execute("CREATE TABLE IF NOT EXISTS Deposit (Price TEXT, Date TEXT, Time TEXT , Des TEXT)")
+                    cursor.execute("DELETE FROM Deposit")
                     
                     for i in range(t.rowCount()):        
                         D_Price=t.cellWidget(i,0).text()
@@ -1470,10 +1510,11 @@ class AccountingApp(QMainWindow):
                         connection.commit()
                         
                 
-                elif t.objectName()=="ledger_table":
+                if t.objectName()=="ledger_table":
                     cursor.execute("CREATE TABLE IF NOT EXISTS Ledger (Name TEXT , Date TEXT, Time TEXT, Price TEXT , PName TEXT)")
+                    cursor.execute("DELETE FROM Ledger")
                     for i in range(t.rowCount()):        
-                        L_Name=t.cellWidget(i,0).text()
+                        L_Name=t.item(i,0).text()
                         L_Date=t.cellWidget(i,1).text()
                         L_Time=t.cellWidget(i,2).text()
                         L_Price=t.cellWidget(i,3).text()
@@ -1485,6 +1526,7 @@ class AccountingApp(QMainWindow):
         connection.close()
 
     def Quit_Save(self):
+        
         ret=QMessageBox.question(self,"SAVE","do you want to save your changes".title(),QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
         if ret==QMessageBox.Yes:
             self.Save()
@@ -1513,8 +1555,7 @@ def main():
 
 
 
-try:
-    if __name__ == "__main__":
-        main()
-except:
-    pass
+
+if __name__ == "__main__":
+    main()
+
